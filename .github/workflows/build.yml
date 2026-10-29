@@ -45,6 +45,27 @@ jobs:
           cp -a SmartFileRenamer/. .
           rm -rf SmartFileRenamer
 
+      - name: Fix duplicate Kotlin Compose plugin declaration
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("app/build.gradle.kts")
+          lines = p.read_text().splitlines(keepends=True)
+          seen = False
+          fixed = []
+
+          for line in lines:
+              if "org.jetbrains.kotlin.plugin.compose" in line:
+                  if seen:
+                      continue
+                  seen = True
+              fixed.append(line)
+
+          p.write_text("".join(fixed))
+          print("Compose plugin fix applied")
+          PY
+
       - name: Stabilize background rename worker
         run: |
           sed -i '/import androidx.work.WorkerParameters/a import androidx.work.workDataOf' app/src/main/java/com/example/smartfilerenamer/RenameWorker.kt
