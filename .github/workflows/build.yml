@@ -23,6 +23,10 @@ jobs:
           cp -a SmartFileRenamer/. .
           rm -rf SmartFileRenamer
 
+      - name: Fix missing WorkManager import
+        run: |
+          sed -i '/import androidx.work.WorkerParameters/a import androidx.work.workDataOf' app/src/main/java/com/example/smartfilerenamer/RenameWorker.kt
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
