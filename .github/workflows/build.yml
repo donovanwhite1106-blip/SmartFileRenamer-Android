@@ -18,6 +18,28 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Unpack Android project
+
+      - name: Fix duplicate Kotlin Compose plugin declaration
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("app/build.gradle.kts")
+          lines = p.read_text().splitlines(keepends=True)
+          seen = False
+          fixed = []
+
+          for line in lines:
+              if "org.jetbrains.kotlin.plugin.compose" in line:
+                  if seen:
+                      continue
+                  seen = True
+              fixed.append(line)
+
+          p.write_text("".join(fixed))
+          print("Compose plugin fix applied")
+          PY
+
         run: |
           unzip -o SmartFileRenamer-Android-Starter.zip
           cp -a SmartFileRenamer/. .
