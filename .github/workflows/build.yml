@@ -22,7 +22,32 @@ jobs:
           unzip -o SmartFileRenamer-Android-Starter.zip
           cp -a SmartFileRenamer/. .
           rm -rf SmartFileRenamer
+      - name: Package Android source for download
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile, ZIP_DEFLATED
 
+          with ZipFile("SmartFileRenamer-Source.zip", "w", ZIP_DEFLATED) as z:
+              for root in [Path("app"), Path("gradle")]:
+                  if root.exists():
+                      for p in root.rglob("*"):
+                          if p.is_file() and "build" not in p.parts:
+                              z.write(p, p.as_posix())
+
+              for name in [
+                  "settings.gradle.kts",
+                  "build.gradle.kts",
+                  "gradle.properties",
+                  "gradlew",
+                  "gradlew.bat"
+              ]:
+                  p = Path(name)
+                  if p.is_file():
+                      z.write(p, p.as_posix())
+
+          print("Android source packaged successfully.")
+          PY
       - name: Fix duplicate Kotlin Compose plugin declaration
         shell: bash
         run: |
