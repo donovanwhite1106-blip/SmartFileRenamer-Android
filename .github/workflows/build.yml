@@ -1,4 +1,3 @@
-
 name: Build Smart File Renamer APK
 
 on:
@@ -22,6 +21,7 @@ jobs:
           unzip -o SmartFileRenamer-Android-Starter.zip
           cp -a SmartFileRenamer/. .
           rm -rf SmartFileRenamer
+
       - name: Package Android source for download
         run: |
           python3 - <<'PY'
@@ -48,6 +48,7 @@ jobs:
 
           print("Android source packaged successfully.")
           PY
+
       - name: Fix duplicate Kotlin Compose plugin declaration
         shell: bash
         run: |
@@ -75,7 +76,6 @@ jobs:
 
           p.write_text("".join(fixed))
           print("Compose plugin declarations checked.")
-
           PY
 
       - name: Stabilize background rename worker
@@ -97,17 +97,6 @@ jobs:
       - name: Build APK
         run: gradle --no-daemon assembleDebug
 
-      - name: Upload APK
-            - name: Upload Android source
-        uses: actions/upload-artifact@v4
-        with:
-          name: SmartFileRenamer-Source
-          path: SmartFileRenamer-Source.zip
-          if-no-files-found: error
-          retention-days: 14
-        uses: actions/upload-artifact@v4
-        with:
-          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
